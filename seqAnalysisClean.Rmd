@@ -1,0 +1,180 @@
+---
+title: "Sequence analysis of Persuasion Data"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+This is built upon Erika's work. Using the TraMineR package for sequence analysis. The first part is analysis of persuader's sequences.
+
+```{r}
+#install.packages("TraMineR")
+library(TraMineR)
+library(magrittr)
+library(dplyr)
+```
+
+Load the data. And plot the frequencies of different states at each step, comparing the donated and not donated groups.
+
+```{r, fig.width = 9, fig.asp = .5}
+persuader <- read.csv("persuaderOnly.csv", stringsAsFactors = F)
+persuader.alphab <- c("emo", "log", "cre", "pro","task", "other")
+persuader.seq <- seqdef(persuader, 3:12, alphabet = persuader.alphab)
+donate.seq <- seqdef(persuader %>% filter(persuader$donate_p==1), 3:12, alphabet = persuader.alphab)
+notdonate.seq <- seqdef(persuader %>% filter(persuader$donate_p==0), 3:12, alphabet = persuader.alphab)
+#seqdplot(persuader.seq, group = persuader$donate_p, border = NA)
+```
+
+Now, we need to analyse the subsequences of these groups.
+```{r}
+#transition <- seqetm(persuader.seq, method = "transition")
+#transition
+pder.seqe <- seqecreate(persuader.seq)
+pder.seqestate <- seqecreate(persuader.seq, tevent = "state")
+pder.seqeperiod <- seqecreate(persuader.seq, tevent = "period")
+#pder.seqe[1]
+#pder.seqestate[1]
+#pder.seqeperiod[1]
+
+don.seqe <- seqecreate(donate.seq)
+don.seqestate <- seqecreate(donate.seq, tevent = "state")
+don.seqeperiod <- seqecreate(donate.seq, tevent = "period")
+
+ndon.seqe <- seqecreate(notdonate.seq)
+ndon.seqestate <- seqecreate(notdonate.seq, tevent = "state")
+ndon.seqeperiod <- seqecreate(notdonate.seq, tevent = "period")
+```
+
+
+There is also another function to compare subsequence frenquencies from two groups. However, there are two methods to calculate, and I don't know what they are exactly. But the Chi-square test is less strict than the other one Bonferroni test.
+
+```{r, fig.width=5}
+pdersubseq <- seqefsub(pder.seqestate, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
+cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
+discrcohort011 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.1)
+discrcohort011
+```
+
+```{r, fig.width=8}
+plot(discrcohort011, resid.levels = c(0.1,0.05), rows = 1, cols = 1)
+```
+
+```{r, fig.width=8, fig.height=8}
+plot(discrcohort011, resid.levels = c(0.1,0.05), rows = 1, cols = 1, ptype = "resid")
+```
+
+```{r, fig.width=10}
+pdersubseq <- seqefsub(pder.seqestate, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 3))
+cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
+discrcohort01_1 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
+discrcohort01_1
+```
+
+```{r, fig.width=8}
+plot(discrcohort01_1, resid.levels = c(0.05,0.01), rows = 1, cols = 1)
+```
+
+```{r, fig.width=8, fig.height=8}
+plot(discrcohort01_1, resid.levels = c(0.05,0.01), rows = 1, cols = 1, ptype = "resid")
+```
+
+
+```{r, fig.width=8}
+pdersubseq <- seqefsub(pder.seqe, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
+cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
+discrcohort111 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.1)
+discrcohort111
+```
+```{r, fig.width=8}
+plot(discrcohort111, resid.levels = c(0.1,0.05), rows = 1, cols = 1)
+```
+
+```{r, fig.width=8, fig.height=8}
+plot(discrcohort111, resid.levels = c(0.1,0.05), rows = 1, cols = 1, ptype = "resid")
+```
+
+```{r, fig.width=10}
+pdersubseq <- seqefsub(pder.seqe, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 3))
+cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
+discrcohort11_1 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
+discrcohort11_1
+```
+
+```{r, fig.width=8, fig.height=6}
+plot(discrcohort11_1, resid.levels = c(0.05,0.01), rows = 1, cols = 1)
+```
+
+```{r, fig.width=8, fig.height=10}
+plot(discrcohort11_1, resid.levels = c(0.05,0.01), rows = 1, cols = 1, ptype = "resid")
+```
+
+
+```{r, fig.width = 9, fig.asp = .5}
+persuader <- read.csv("persuaderPersuadee.csv", stringsAsFactors = F)
+persuader.alphab  <- c("opening","askp","providep","positive","offtask","asktask","agree","disagree","cre","emo","log","other","pro","task") # the order of strategies
+#persuader.alphab <- c("A1","A11","A12","A16","A17","A18","A19", "A3", "A5","A6","cre","emo","log","other","pro","task") # the order of strategies
+persuader.seq <- seqdef(persuader, 3:22, alphabet = persuader.alphab)
+donate.seq <- seqdef(persuader %>% filter(persuader$donate_p==1), 3:22, alphabet = persuader.alphab)
+notdonate.seq <- seqdef(persuader %>% filter(persuader$donate_p==0), 3:22, alphabet = persuader.alphab)
+#seqdplot(persuader.seq, group = persuader$donate_p, border = NA)
+```
+
+
+```{r}
+#transition <- seqetm(persuader.seq, method = "transition")
+#transition
+pder.seqe <- seqecreate(persuader.seq)
+pder.seqestate <- seqecreate(persuader.seq, tevent = "state")
+pder.seqeperiod <- seqecreate(persuader.seq, tevent = "period")
+#pder.seqe[1]
+#pder.seqestate[1]
+#pder.seqeperiod[1]
+
+don.seqe <- seqecreate(donate.seq)
+don.seqestate <- seqecreate(donate.seq, tevent = "state")
+don.seqeperiod <- seqecreate(donate.seq, tevent = "period")
+
+ndon.seqe <- seqecreate(notdonate.seq)
+ndon.seqestate <- seqecreate(notdonate.seq, tevent = "state")
+ndon.seqeperiod <- seqecreate(notdonate.seq, tevent = "period")
+```
+
+```{r, fig.width=10}
+pdersubseq <- seqefsub(pder.seqestate, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
+cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
+discrcohort011 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
+discrcohort011
+```
+
+```{r, fig.width=8}
+plot(discrcohort011, resid.levels = c(0.05,0.01), rows = 1, cols = 1)
+```
+
+```{r, fig.width=8, fig.height=8}
+plot(discrcohort011, resid.levels = c(0.05,0.01), rows = 1, cols = 1, ptype = "resid")
+```
+
+```{r, fig.width=10}
+pdersubseq <- seqefsub(pder.seqe, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
+cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
+discrcohort111 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
+discrcohort111
+```
+
+```{r, fig.width=8, fig.height=8}
+plot(discrcohort111, resid.levels = c(0.05,0.01), rows = 1, cols = 1)
+```
+
+
+```{r, fig.width=10, fig.height=14}
+plot(discrcohort111, resid.levels = c(0.05,0.01), rows = 1, cols = 1, ptype = "resid")
+```
+
+
+
+
+
+
+
