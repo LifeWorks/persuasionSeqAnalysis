@@ -54,7 +54,7 @@ There is also another function to compare subsequence frenquencies from two grou
 ```{r, fig.width=5}
 pdersubseq <- seqefsub(pder.seqestate, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
 cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
-discrcohort011 <- seqecmpgroup(pdersubseq, group = cohort, method = "bonferroni", pvalue.limit = 0.05)
+discrcohort011 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
 discrcohort011
 ```
 
@@ -67,9 +67,9 @@ plot(discrcohort011, resid.levels = c(0.05,0.01))
 ```
 
 ```{r, fig.width=10}
-pdersubseq <- seqefsub(pder.seqestate, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 5))
+pdersubseq <- seqefsub(pder.seqestate, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 3))
 cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
-discrcohort01_1 <- seqecmpgroup(pdersubseq, group = cohort, method = "bonferroni", pvalue.limit = 0.05)
+discrcohort01_1 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
 discrcohort01_1
 ```
 
@@ -85,7 +85,7 @@ plot(discrcohort01_1, resid.levels = c(0.05,0.01))
 ```{r, fig.width=8}
 pdersubseq <- seqefsub(pder.seqe, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
 cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
-discrcohort111 <- seqecmpgroup(pdersubseq, group = cohort, method = "bonferroni", pvalue.limit = 0.05)
+discrcohort111 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
 discrcohort111
 ```
 ```{r, fig.width=8}
@@ -99,7 +99,7 @@ plot(discrcohort111, resid.levels = c(0.05,0.01))
 ```{r, fig.width=10}
 pdersubseq <- seqefsub(pder.seqe, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 3))
 cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
-discrcohort11_1 <- seqecmpgroup(pdersubseq, group = cohort, method = "bonferroni", pvalue.limit = 0.05)
+discrcohort11_1 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
 discrcohort11_1
 ```
 
@@ -145,7 +145,7 @@ ndon.seqeperiod <- seqecreate(notdonate.seq, tevent = "period")
 ```{r, fig.width=10}
 pdersubseq <- seqefsub(pder.seqestate, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
 cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
-discrcohort011 <- seqecmpgroup(pdersubseq, group = cohort, method = "bonferroni", pvalue.limit = 0.05)
+discrcohort011 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
 discrcohort011
 ```
 ```{r, fig.width=8}
@@ -166,7 +166,7 @@ plot(discrcohort011, resid.levels = c(0.05,0.01))
 ```{r, fig.width=10}
 pdersubseq <- seqefsub(pder.seqe, min.support = 10, constraint = seqeconstraint(count.method = 1, max.gap = 1))
 cohort <- factor(persuader$donate_p > 0, labels = c("no donation", "donation"))
-discrcohort111 <- seqecmpgroup(pdersubseq, group = cohort, method = "bonferroni", pvalue.limit = 0.05)
+discrcohort111 <- seqecmpgroup(pdersubseq, group = cohort, method = "chisq", pvalue.limit = 0.05)
 discrcohort111
 ```
 
@@ -179,7 +179,9 @@ plot(discrcohort111, resid.levels = c(0.05,0.01))
 #plot(discrcohort111, resid.levels = c(0.05,0.01), rows = 1, cols = 1, ptype = "resid")
 ```
 
+The logic here would be:
 
+Entropy ---> Diversity of strategies correlates with donation behaviour ---> Accumulates effect or certain single strategy effect? ---> frequency analysis show (no distinct difference of single strategy between two donation behaviours) ---> non-specific accumulation vs specific accumulation ---> markov chain model and subsequence analysis (some specific accumulations).
 
 
 
